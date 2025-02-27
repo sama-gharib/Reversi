@@ -6,6 +6,9 @@ PYTHON = $(VENV)/bin/python3
 run: src/main.py $(VENV)/pygame_installed
 	@$(PYTHON) src/main.py
 
+uidemo: src/main.py $(VENV)/pygame_installed
+	@$(PYTHON) src/main.py uidemo
+
 $(VENV)/pygame_installed: $(VENV)
 	@$(PIP) install pygame
 	touch $(VENV)/pygame_installed
