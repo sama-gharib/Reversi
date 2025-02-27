@@ -17,8 +17,10 @@ class Widget:
 
 
 	def _apply_to_children(self, procedure):
+		results = []
 		for child in self._children:
-			procedure(child)
+			results.append(procedure(child))
+		return results
 
 	def _recalculate_absolutes(self, parent_absolute):
 		self._absolute.position = parent_absolute.position + self._relative.position.elementwise() * parent_absolute.size
@@ -26,45 +28,38 @@ class Widget:
 
 		self._apply_to_children(lambda x: x._recalculate_absolutes(self._absolute))
 
-	def draw(self, surface):
-		pg.draw.rect(surface, "white", self._absolute.as_rect(), 2)
+	def draw(self, surface, color = "red", border_radius = 10):
+		pg.draw.rect(surface, color, self._absolute.as_rect(), border_radius = border_radius)
 
 		self._apply_to_children(lambda x: x.draw(surface))
 
-if __name__ == "__main__":
-	# Widget demo
-	pg.init()
-	surface = pg.display.set_mode((800, 600))
+	def event(self, e):
+		if not (True in self._apply_to_children(lambda x: x.event(e))):
+			# Event has not been caught by any child
+			mouse = pg.Vector2(pg.mouse.get_pos()[0], pg.mouse.get_pos()[1])
+			if  mouse.x >= self._absolute.position.x \
+			and mouse.x <= self._absolute.position.x + self._absolute.size.x \
+			and mouse.y >= self._absolute.position.y \
+			and mouse.y <= self._absolute.position.y + self._absolute.size.y:
+				# The mouse is hovering the widget's position : we catch the event
 
-	
-	w = Widget(
-		pg.Vector2(100, 100),
-		pg.Vector2(300, 200),
-		[
-			Widget(
-				pg.Vector2(0.1, 0.1),
-				pg.Vector2(0.8, 0.8),
-				[
-					Widget(
-						pg.Vector2(0.1, 0.1),
-						pg.Vector2(0.3, 0.8)
-					),
-					Widget(
-						pg.Vector2(0.6, 0.1),
-						pg.Vector2(0.3, 0.8)
-					)
-				]
-			)
-		]
-	)
-	
-	running = True
-	while running:
-		for event in pg.event.get():
-			if event.type == pg.QUIT:
-				running = False
+				self.has_event(e)
 
-		surface.fill("black")
-		w.draw(surface)
-		pg.display.flip()
+				return True
+			else:
+
+				self.miss_event(e)
+
+				return False
+
+	def has_event(self, e):
+		# Do not modify ! This function should fail if
+		# the child class on which it is calls does not override it.
+		# raise NotImplementedError
+		pass
+
+	def miss_event(self, e):
+		pass
+
+
 	
