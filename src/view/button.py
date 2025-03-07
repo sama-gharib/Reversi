@@ -11,8 +11,9 @@ class Button (Widget):
         "press"   : (0.25, 0.25, 0.25)
     }
 
-    def __init__(self, color = (255, 255, 255), position = pg.Vector2(0, 0), size = pg.Vector2(1, 1), children = []):
+    def __init__(self, callback = None, color = (255, 255, 255), position = pg.Vector2(0, 0), size = pg.Vector2(1, 1), children = []):
         super().__init__(position, size, children)
+        self._callback = callback
         self._color = color
         self._state = "rest"
 
@@ -35,7 +36,7 @@ class Button (Widget):
             self._state = "press"
         elif e.type == pg.MOUSEBUTTONUP:
             self._state = "hover"
-            print("DEBUG: ACTIVATED BUTTON")
+            self._callback()
 
     def miss_event(self, e):
         if e.type == pg.MOUSEBUTTONUP or e.type == pg.MOUSEMOTION and self._state != "press":
