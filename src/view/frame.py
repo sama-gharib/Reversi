@@ -9,6 +9,9 @@ class Frame (Widget):
         self._fill = fill
         self._rounded = rounded
 
+    def set_background_color(self, color):
+        self._fill = color
+    
     # Overrides
 
     def draw(self, surface):
