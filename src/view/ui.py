@@ -3,6 +3,7 @@ from view.frame import Frame
 from view.label import Label
 from view.options import Options
 from view.inputbox import InputBox
+from view.board_frame import BoardFrame
 
 import pygame as pg
 
@@ -37,7 +38,7 @@ class Ui:
 		if self._current_tab != None:
 			self._tabs[self._current_tab].event(event)
 
-def default_ui():
+def default_ui(board):
     default_callback = lambda: print("Not implemented.")
     options = Options(None)  
 
@@ -61,7 +62,7 @@ def default_ui():
                     size=pg.Vector2(0.3, 0.6),
                     children=[
                         Button(
-                            default_callback,
+                            lambda: default.set_tab("game"),
                             (255, 207, 80),
                             pg.Vector2(0.25, 0.15),
                             pg.Vector2(0.5, 0.2),
@@ -250,6 +251,33 @@ def default_ui():
                             ]
                         )
                     ]
+                )
+            ]
+        ),
+        "game": Frame(
+            False,
+            (98, 111, 71),
+            pg.Vector2(0, 0),
+            pg.Vector2(800, 600),
+            [
+                Button(
+                    lambda: default.set_tab("main_menu"),
+                    (200, 200, 200),
+                    pg.Vector2(0.01, 0.01),
+                    pg.Vector2(0.15, 0.05),
+                    [
+                        Label(
+                            "Menu principal",
+                            pg.Vector2(0.1, 0.1),
+                            pg.Vector2(0.8, 0.8)
+                        )
+                    ]
+                ),
+                BoardFrame(
+                    board,
+                    (100, 100, 100),    
+                    pg.Vector2(0.2, 0.1),
+                    pg.Vector2(0.6, 0.6 * 4/3)
                 )
             ]
         ),

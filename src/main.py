@@ -14,7 +14,7 @@ if __name__ == '__main__':
 		print('Bienvenue dans le Reversi !')
 
 		pg.init()
-		app = Application(default_ui())
+		app = Application()
 		app.run()
 
 		print('Fini.')

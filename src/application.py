@@ -1,11 +1,12 @@
-import model.model
+from model.board import Board
+from view.ui import default_ui
 
 import pygame
 
 class Application:
-	def __init__(self, ui):
-		self._ui = ui
-
+	def __init__(self):
+		self._board = Board()
+		self._ui = default_ui(self._board)
 
 	def run(self):
 		screen = pygame.display.set_mode((800, 600))
