@@ -38,6 +38,9 @@ class Board:
         self._board[mid - 1][mid] = self.BLACK
         self._board[mid][mid - 1] = self.BLACK
 
+    def get_at(self, line: int, column: int) -> int:
+        return self._board[line][column]
+
     def clear_board(self):
         """ Clear the board """
         self._board = [[self.EMPTY for _ in range(self._board_size)] for _ in range(self._board_size)]

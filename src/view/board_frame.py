@@ -8,12 +8,6 @@ class BoardFrame (Frame):
         super().__init__(True, fill, position, size, children)
         self._board = board
         
-        slot_size = 1/self._board.board_size
         for line in range(self._board.board_size):
             for column in range(self._board.board_size):
-                self._children.append(
-                    SlotButton(
-                        (pg.Vector2(column, line) +  pg.Vector2(0.05, 0.05)) * slot_size,
-                        slot_size * 0.9
-                    )
-                )
+                self._children.append(SlotButton(board, pg.Vector2(column, line)))
