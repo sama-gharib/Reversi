@@ -2,6 +2,7 @@ import pygame as pg
 
 from view.button import Button
 from model.board import Board
+from model.human import Human
 
 class SlotButton (Button):
     '''
@@ -9,7 +10,7 @@ class SlotButton (Button):
         to auto update when player puts a new token.
     '''
 
-    def __init__(self, board, position = pg.Vector2(0, 0), children = []):
+    def __init__(self, board, humans = [], position = pg.Vector2(0, 0), children = []):
         '''
             Warning ! Here, position is expected to be in board
             coordinates format, not in proportion as expected
@@ -21,14 +22,20 @@ class SlotButton (Button):
         slot_size = 1/board.board_size # In proportion
 
         super().__init__(
-            lambda: print("TODO!!"),
+            lambda: self._on_click(),
             (200, 200, 200),
             (position +  pg.Vector2(0.05, 0.05)) * slot_size,
             slot_size * 0.9,
             children
         )
         self._board = board
+        self._humans = humans
         self._slot = position # (column, line)
+
+    def _on_click(self):
+        for h in self._humans:
+            if isinstance(h, Human):
+                h.should_play(int(self._slot.y), int(self._slot.x))
 
     # Overrides
 

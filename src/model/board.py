@@ -6,6 +6,8 @@ from collections import OrderedDict
 class Board:
     """ Reversi (Othello) board class """
 
+    BOARD_SIZE = 8
+
     EMPTY = -1
     BLACK = 0
     WHITE = 1
@@ -16,7 +18,7 @@ class Board:
         (1, -1), (1, 0),  (1, 1)
     ]
 
-    def __init__(self, board_size: int = 8):
+    def __init__(self):
         """
         Initialize the board
         
@@ -25,8 +27,8 @@ class Board:
         board_size: int
             Size of the board (default is 8x8)
         """
-        self._board_size = board_size
-        self._board = [[self.EMPTY for _ in range(board_size)] for _ in range(board_size)]
+        self._board_size = Board.BOARD_SIZE
+        self._board = [[self.EMPTY for _ in range(self._board_size)] for _ in range(self._board_size)]
         self._current_player = self.BLACK
         self._init_board()
 
@@ -77,7 +79,7 @@ class Board:
     def make_move(self, x: int, y: int) -> bool:
         """ Play a move and flip the pieces. Returns True if successful, otherwise False """
         if not self.is_valid_move(x, y):
-            return False
+            raise ValueError(f'Move on line {x} and column {y} is illegal.')
 
         self._board[x][y] = self._current_player
 

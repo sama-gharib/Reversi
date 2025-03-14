@@ -38,7 +38,7 @@ class Ui:
 		if self._current_tab != None:
 			self._tabs[self._current_tab].event(event)
 
-def default_ui(board):
+def default_ui(board, humans):
     default_callback = lambda: print("Not implemented.")
     options = Options(None)  
 
@@ -274,7 +274,7 @@ def default_ui(board):
                     ]
                 ),
                 BoardFrame(
-                    board,
+                    board, humans,
                     (100, 100, 100),    
                     pg.Vector2(0.2, 0.1),
                     pg.Vector2(0.6, 0.6 * 4/3)
