@@ -254,22 +254,22 @@ def default_ui(board, humans):
                 )
             ]
         ),
-        "game": Frame(
+        "game_ui": Frame(
             False,
             (98, 111, 71),
             pg.Vector2(0, 0),
             pg.Vector2(800, 600),
             [
                 Button(
-                    lambda: default.set_tab("main_menu"),
+                    lambda: default.set_tab("game"),
                     (200, 200, 200),
                     pg.Vector2(0.01, 0.01),
-                    pg.Vector2(0.15, 0.05),
+                    pg.Vector2(0.1, 0.05),
                     [
                         Label(
-                            "Menu principal",
+                            "Back",
                             pg.Vector2(0.1, 0.1),
-                            pg.Vector2(0.8, 0.8)
+                            pg.Vector2(0.8, 0.6)
                         )
                     ]
                 ),
@@ -278,6 +278,66 @@ def default_ui(board, humans):
                     (100, 100, 100),    
                     pg.Vector2(0.2, 0.1),
                     pg.Vector2(0.6, 0.6 * 4/3)
+                )
+            ]
+        ),
+		"game": Frame(
+            rounded=False,
+            fill=(98, 111, 71),  
+            position=pg.Vector2(0, 0),
+            size=pg.Vector2(800, 600),
+            children=[
+                Label(
+                    "Game mode",
+                    pg.Vector2(0.25, 0.05),
+                    pg.Vector2(0.5, 0.1)
+                ),
+                Frame(
+                    rounded=True,
+                    fill=(164, 180, 101),
+                    position=pg.Vector2(0.35, 0.3),
+                    size=pg.Vector2(0.3, 0.6),
+                    children=[
+                        Button(
+                            lambda: default.set_tab("game_ui"),
+                            (255, 207, 80),
+                            pg.Vector2(0.25, 0.15),
+                            pg.Vector2(0.5, 0.2),
+                            [
+                                Label(
+                                    "PvP",
+                                    pg.Vector2(0.25, 0.3),
+                                    pg.Vector2(0.55, 0.6)
+                                )
+                            ]
+                        ),
+                        Button(
+                            lambda: default.set_tab("game_ui"),
+                            (255, 207, 80),
+                            pg.Vector2(0.25, 0.4),
+                            pg.Vector2(0.5, 0.2),
+                            [
+                                Label(
+                                    "PvAI",
+                                    pg.Vector2(0.25, 0.3),
+                                    pg.Vector2(0.55, 0.6)
+                                )
+                            ]
+                        ),
+                        Button(
+                            lambda: default.set_tab("main_menu"),
+                            (255, 207, 80),
+                            pg.Vector2(0.25, 0.65),
+                            pg.Vector2(0.5, 0.2),
+                            [
+                                Label(
+                                    "Back",
+                                    pg.Vector2(0.2, 0.3),
+                                    pg.Vector2(0.55, 0.6)
+                                )
+                            ]
+                        )
+                    ]
                 )
             ]
         ),
@@ -319,7 +379,7 @@ def default_ui(board, humans):
                     ]
                 )
             ]
-        )
+        ),		
     }
 
     default.set_tab("main_menu")
