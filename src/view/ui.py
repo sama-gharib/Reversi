@@ -15,6 +15,7 @@ class Ui:
 		self._font = pg.font.Font(None, 32)
 		self._error_text = self._font.render("Erreur: Aucun onglet selectionné", True, "black")
 		self._request_quit = False
+		self._mode = False
 
 	def request_quit(self):
 		self._request_quit = True
@@ -27,6 +28,10 @@ class Ui:
 			self._current_tab = new_tab
 		else:
 			raise ValueError(f'Unexisting tab : {new_tab}')
+		
+	def mode_change(self):
+		print("[DEBUG] Mode change triggered!")
+		self._mode = True
 
 	def draw(self, screen):
 		if self._current_tab == None:
@@ -312,7 +317,7 @@ def default_ui(board, humans):
                             ]
                         ),
                         Button(
-                            lambda: default.set_tab("game_ui"),
+                            lambda: (default.set_tab("game_ui"),default.mode_change()),
                             (255, 207, 80),
                             pg.Vector2(0.25, 0.4),
                             pg.Vector2(0.5, 0.2),

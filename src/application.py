@@ -8,7 +8,7 @@ import pygame
 class Application:
 	def __init__(self):
 		self._board = Board()
-		self._white_player = Stupidity()
+		self._white_player = Human()
 		self._black_player = Human()
 
 		self._ui = default_ui(self._board, [self._white_player, self._black_player])
@@ -17,11 +17,19 @@ class Application:
 		screen = pygame.display.set_mode((800, 600))
 		clock = pygame.time.Clock()
 		running = True
-
+		
 		black_playing = False
+		
 		while running and not self._ui.has_quit():
-
-			# Player turn rules
+			print(black_playing)
+			if self._ui._mode:
+				print("[DEBUG] Mode change")
+				self._white_player = Stupidity()
+				self._black_player = Human()
+				self._ui._mode = False
+				continue
+                
+            # Player turn rules
 			if black_playing and self._black_player.is_done():
 				print("[DEBUG] White's turn")
 				black_playing = False
