@@ -30,3 +30,17 @@ class Box:
 
     position = property(get_position, set_position)
     size     = property(get_size, set_size)
+    
+class ReactiveStr:
+    '''
+        This class is used to have a reference sementic
+        with Python's str.
+    '''
+    def __init__(self, value = ''):
+        self.value = value
+    def __eq__(self, v: str):
+        return self.value == v
+    def __repr__(self):
+        return self.value
+    def __hash__(self):
+        return hash(self.value)
