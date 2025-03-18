@@ -48,403 +48,412 @@ class Ui:
 		if self._current_tab != None:
 			self._tabs[self._current_tab].event(event)
 
+
 def default_ui(app):
 	default_callback = lambda: print("Not implemented.")
-	options = Options(None)  
+	options = Options(None)
 
-	black_callbacks = [lambda p=a_player: app.set_black_key(p) for a_player in app.KNOWN_BLACK_PLAYERS]
-	white_callbacks = [lambda p=a_player: app.set_white_key(p) for a_player in app.KNOWN_WHITE_PLAYERS]
-	
-	black_player_choices = [
-		Button(
-			black_callbacks[i],
-			(255, 207, 80),
-			pg.Vector2(0.1, 0.2 + i * 0.7 / len(app.KNOWN_BLACK_PLAYERS)),
-			pg.Vector2(0.8, 0.6/len(app.KNOWN_BLACK_PLAYERS)),
-			[
-				Label(
-					ReactiveStr(a_player),
-					pg.Vector2(0.1, 0.1),
-					pg.Vector2(0.8, 0.8)
-				)
-			]
-		)
-		for a_player, i in zip(app.KNOWN_BLACK_PLAYERS.keys(), range(len(app.KNOWN_BLACK_PLAYERS)))
-	]
-	
-	white_player_choices = [
-		Button(
-			white_callbacks[i],
-			(255, 207, 80),
-			pg.Vector2(0.1, 0.2 + i * 0.7 / len(app.KNOWN_WHITE_PLAYERS)),
-			pg.Vector2(0.8, 0.6/len(app.KNOWN_WHITE_PLAYERS)),
-			[
-				Label(
-					ReactiveStr(a_player),
-					pg.Vector2(0.1, 0.1),
-					pg.Vector2(0.8, 0.8)
-				)
-			]
-		)
-		for a_player, i in zip(app.KNOWN_WHITE_PLAYERS.keys(), range(len(app.KNOWN_WHITE_PLAYERS)))
-	]
+	black_callbacks, white_callbacks = create_player_callbacks(app)
+	black_player_choices = create_player_choices(black_callbacks, app.KNOWN_BLACK_PLAYERS, "black")
+	white_player_choices = create_player_choices(white_callbacks, app.KNOWN_WHITE_PLAYERS, "white")
 
-	default = Ui({}, None)
+	default = Ui({}, "main_menu")
 	default._tabs = {
-		"main_menu": Frame(
-			rounded=False,
-			fill=(98, 111, 71),  
-			position=pg.Vector2(0, 0),
-			size=pg.Vector2(800, 600),
-			children=[
-				Label(
-					ReactiveStr("Reversi"),
-					pg.Vector2(0.25, 0.05),
-					pg.Vector2(0.5, 0.1)
-				),
-				Frame(
-					rounded=True,
-					fill=(164, 180, 101),
-					position=pg.Vector2(0.35, 0.3),
-					size=pg.Vector2(0.3, 0.6),
-					children=[
-						Button(
-							lambda: default.set_tab("game"),
-							(255, 207, 80),
-							pg.Vector2(0.25, 0.15),
-							pg.Vector2(0.5, 0.2),
-							[
-								Label(
-									ReactiveStr("Play !"),
-									pg.Vector2(0.25, 0.3),
-									pg.Vector2(0.55, 0.6)
-								)
-							]
-						),
-						Button(
-							lambda: default.set_tab("options"),
-							(255, 207, 80),
-							pg.Vector2(0.25, 0.4),
-							pg.Vector2(0.5, 0.2),
-							[
-								Label(
-									ReactiveStr("Options"),
-									pg.Vector2(0.1, 0.3),
-									pg.Vector2(0.8, 0.6)
-								)
-							]
-						),
-						Button(
-							lambda: default.set_tab("quit"),
-							(255, 207, 80),
-							pg.Vector2(0.25, 0.65),
-							pg.Vector2(0.5, 0.2),
-							[
-								Label(
-									ReactiveStr(" Quit "),
-									pg.Vector2(0.2, 0.3),
-									pg.Vector2(0.55, 0.6)
-								)
-							]
-						)
-					]
-				)
-			]
-		),
-		"options": Frame(
-			rounded=False,
-			fill=(98, 111, 71),  
-			position=pg.Vector2(0, 0),
-			size=pg.Vector2(800, 600),
-			children=[
-				Label(
-					ReactiveStr("Options"),
-					pg.Vector2(0.25, 0.05),
-					pg.Vector2(0.5, 0.1)
-				),
-				Frame(
-					rounded=True,
-					fill=(164, 180, 101),
-					position=pg.Vector2(0.35, 0.3),
-					size=pg.Vector2(0.3, 0.6),
-					children=[
-						Button(
-							lambda: default.set_tab("options_color"),
-							(255, 207, 80),
-							pg.Vector2(0.25, 0.15),
-							pg.Vector2(0.5, 0.2),
-							[
-								Label(
-									ReactiveStr("Color"),
-									pg.Vector2(0.25, 0.3),
-									pg.Vector2(0.55, 0.6)
-								)
-							]
-						),
-						Button(
-							default_callback,
-							(255, 207, 80),
-							pg.Vector2(0.25, 0.4),
-							pg.Vector2(0.5, 0.2),
-							[
-								Label(
-									ReactiveStr("Difficult"),
-									pg.Vector2(0.1, 0.3),
-									pg.Vector2(0.8, 0.6)
-								)
-							]
-						),
-						Button(
-							lambda: default.set_tab("main_menu"),
-							(255, 207, 80),
-							pg.Vector2(0.25, 0.65),
-							pg.Vector2(0.5, 0.2),
-							[
-								Label(
-									ReactiveStr("Back"),
-									pg.Vector2(0.2, 0.3),
-									pg.Vector2(0.55, 0.6)
-								)
-							]
-						)
-					]
-				)
-			]
-		),
-		"options_color": Frame(
-			rounded=False,
-			fill=(98, 111, 71),  
-			position=pg.Vector2(0, 0),
-			size=pg.Vector2(800, 600),
-			children=[
-				Label(
-					ReactiveStr("Color Options"),
-					pg.Vector2(0.25, 0.05),
-					pg.Vector2(0.5, 0.1)
-				),
-				Frame(
-					rounded=True,
-					fill=(164, 180, 101),
-					position=pg.Vector2(0.35, 0.3),
-					size=pg.Vector2(0.3, 0.6),
-					children=[
-						Label(
-							ReactiveStr("R:"),
-							pg.Vector2(0.1, 0.1),
-							pg.Vector2(0.1, 0.1)
-						),
-						InputBox(
-							lambda val: options.set_temp_color(int(val), options.temp_color[1], options.temp_color[2]),
-							pg.Vector2(0.2, 0.1),
-							pg.Vector2(0.2, 0.1)
-						),
-						Label(
-							ReactiveStr("G:"),
-							pg.Vector2(0.1, 0.25),
-							pg.Vector2(0.1, 0.1)
-						),
-						InputBox(
-							lambda val: options.set_temp_color(options.temp_color[0], int(val), options.temp_color[2]),
-							pg.Vector2(0.2, 0.25),
-							pg.Vector2(0.2, 0.1)
-						),
-						Label(
-							ReactiveStr("B:"),
-							pg.Vector2(0.1, 0.4),
-							pg.Vector2(0.1, 0.1)
-						),
-						InputBox(
-							lambda val: options.set_temp_color(options.temp_color[0], options.temp_color[1], int(val)),
-							pg.Vector2(0.2, 0.4),
-							pg.Vector2(0.2, 0.1)
-						),
-						Button(
-							options.random_color,
-							(200, 200, 200),
-							pg.Vector2(0.5, 0.1),
-							pg.Vector2(0.3, 0.1),
-							[
-								Label(
-									ReactiveStr("Random"),
-									pg.Vector2(0.1, 0.1),
-									pg.Vector2(0.8, 0.8)
-								)
-							]
-						),
-						Button(
-							options.apply_temp_color,
-							(200, 200, 200),
-							pg.Vector2(0.5, 0.25),
-							pg.Vector2(0.3, 0.1),
-							[
-								Label(
-									ReactiveStr("Apply"),
-									pg.Vector2(0.1, 0.1),
-									pg.Vector2(0.8, 0.8)
-								)
-							]
-						),
-						Button(
-							lambda: default.set_tab("options"),
-							(200, 200, 200),
-							pg.Vector2(0.5, 0.4),
-							pg.Vector2(0.3, 0.1),
-							[
-								Label(
-									ReactiveStr("Back"),
-									pg.Vector2(0.1, 0.1),
-									pg.Vector2(0.8, 0.8)
-								)
-							]
-						)
-					]
-				)
-			]
-		),
-		"game_ui": Frame(
-			False,
-			(98, 111, 71),
-			pg.Vector2(0, 0),
-			pg.Vector2(800, 600),
-			[
-				Button(
-					lambda: default.set_tab("game"),
-					(200, 200, 200),
-					pg.Vector2(0.01, 0.01),
-					pg.Vector2(0.1, 0.05),
-					[
-						Label(
-							ReactiveStr("Back"),
-							pg.Vector2(0.1, 0.1),
-							pg.Vector2(0.8, 0.6)
-						)
-					]
-				),
-				BoardFrame(
-					app._board,
-					[app.KNOWN_WHITE_PLAYERS['human'], app.KNOWN_BLACK_PLAYERS['human']],
-					(100, 100, 100),	
-					pg.Vector2(0.2, 0.1),
-					pg.Vector2(0.6, 0.6 * 4/3)
-				)
-			]
-		),
-		"game": Frame(
-			rounded=False,
-			fill=(98, 111, 71),  
-			position=pg.Vector2(0, 0),
-			size=pg.Vector2(800, 600),
-			children=[
-				Label(
-					ReactiveStr("Players"),
-					pg.Vector2(0.35, 0.05),
-					pg.Vector2(0.3, 0.05)
-				),
-				Label(
-					app.get_black_key(),
-					pg.Vector2(0.35, 0.15),
-					pg.Vector2(0.1, 0.02)
-				),
-				Label(
-					app.get_white_key(),
-					pg.Vector2(0.55, 0.15),
-					pg.Vector2(0.1, 0.02)
-				),
-				Button(
-					lambda: default.set_tab("game_ui"),
-					(255, 207, 80),
-					pg.Vector2(0.45, 0.45),
-					pg.Vector2(0.1, 0.1),
-					[
-						Label(
-							ReactiveStr("Start"),
-							pg.Vector2(0.1, 0.1),
-							pg.Vector2(0.8, 0.8)
-						)
-					]
-				),
-				Button(
-					lambda: default.set_tab("main_menu"),
-					(200, 200, 200),
-					pg.Vector2(0.01, 0.01),
-					pg.Vector2(0.2, 0.05),
-					[
-						Label(
-							ReactiveStr("Main menu"),
-							pg.Vector2(0.1, 0.1),
-							pg.Vector2(0.8, 0.8)
-						)
-					]
-				),
-				Frame(
-					rounded = True,
-					fill = (164, 180, 101),
-					position=pg.Vector2(0.1, 0.2),
-					size=pg.Vector2(0.25, 0.7),
-					children=[
-						Label(
-							ReactiveStr("Black"),
-							pg.Vector2(0.1, 0.05),
-							pg.Vector2(0.8, 0.2)
-						)
-					] + black_player_choices
-				),
-				Frame(
-					rounded = True,
-					fill = (164, 180, 101),
-					position=pg.Vector2(0.65, 0.2),
-					size=pg.Vector2(0.25, 0.7),
-					children=[
-						Label(
-							ReactiveStr("White"),
-							pg.Vector2(0.1, 0.05),
-							pg.Vector2(0.8, 0.2)
-						)
-					] + white_player_choices
-				)
-			]
-		),
-		"quit": Frame(
-			rounded=False,
-			fill=(98, 111, 71),  
-			position=pg.Vector2(0, 0),
-			size=pg.Vector2(800, 600),
-			children=[
-				Label(
-					ReactiveStr("Êtes vous sur de vouloir quitter ?"),
-					pg.Vector2(0.1, 0.1),
-					pg.Vector2(0.8, 0.2)
-				),
-				Button(
-					lambda: default.set_tab("main_menu"),
-					(200, 200, 200),
-					pg.Vector2(0.2, 0.45),
-					pg.Vector2(0.1, 0.1),
-					[
-						Label(
-							ReactiveStr("Rester"),
-							pg.Vector2(0.1, 0.1),
-							pg.Vector2(0.8, 0.8)
-						)
-					]
-				),
-				Button(
-					default.request_quit,
-					(255, 0, 0),
-					pg.Vector2(0.7, 0.45),
-					pg.Vector2(0.1, 0.1),
-					[
-						Label(
-							ReactiveStr("Quitter"),
-							pg.Vector2(0.1, 0.1),
-							pg.Vector2(0.8, 0.8)
-						)
-					]
-				)
-			]
-		),		
+		"main_menu": create_main_menu_frame(default),
+		"options": create_options_frame(default, default_callback),
+		"options_color": create_color_options_frame(default, options),
+		"game_ui": create_game_ui_frame(default, app),
+		"game": create_game_frame(default, app, black_player_choices, white_player_choices),
+		"quit": create_quit_frame(default)
 	}
 
 	default.set_tab("main_menu")
-	options.ui = default  # Permet à Options de mettre à jour la couleur de l'onglet actuel
+	options.ui = default
 	return default
+
+def create_player_callbacks(app):
+	black_callbacks = [lambda p=a_player: app.set_black_key(p) for a_player in app.KNOWN_BLACK_PLAYERS]
+	white_callbacks = [lambda p=a_player: app.set_white_key(p) for a_player in app.KNOWN_WHITE_PLAYERS]
+	return black_callbacks, white_callbacks
+
+def create_player_choices(callbacks, players, player_type):
+	return [
+		Button(
+			callbacks[i],
+			(255, 207, 80),
+			pg.Vector2(0.1, 0.2 + i * 0.7 / len(players)),
+			pg.Vector2(0.8, 0.6/len(players)), 
+			[
+				Label(
+					ReactiveStr(a_player),
+					pg.Vector2(0.1, 0.1),
+					pg.Vector2(0.8, 0.8)
+				)
+			]
+		)
+		for a_player, i in zip(players.keys(), range(len(players)))
+	]
+
+def create_main_menu_frame(default):
+	return Frame(
+		rounded=False,
+		fill=(98, 111, 71),
+		position=pg.Vector2(0, 0), 
+		size=pg.Vector2(800, 600),
+		children=[
+			Label(
+				ReactiveStr("Reversi"),
+				pg.Vector2(0.25, 0.05),
+				pg.Vector2(0.5, 0.1)
+			),
+			Frame(
+				rounded=True,
+				fill=(164, 180, 101),
+				position=pg.Vector2(0.35, 0.3),
+				size=pg.Vector2(0.3, 0.6),
+				children=[
+					Button(
+						lambda: default.set_tab("game"),
+						(255, 207, 80),
+						pg.Vector2(0.25, 0.15),
+						pg.Vector2(0.5, 0.2),
+						[
+							Label(
+								ReactiveStr("Play !"),
+								pg.Vector2(0.25, 0.3),
+								pg.Vector2(0.55, 0.6)
+							)
+						]
+					),
+					Button(
+						lambda: default.set_tab("options"),
+						(255, 207, 80),
+						pg.Vector2(0.25, 0.4),
+						pg.Vector2(0.5, 0.2),
+						[
+							Label(
+								ReactiveStr("Options"),
+								pg.Vector2(0.1, 0.3),
+								pg.Vector2(0.8, 0.6)
+							)
+						]
+					),
+					Button(
+						lambda: default.set_tab("quit"),
+						(255, 207, 80),
+						pg.Vector2(0.25, 0.65),
+						pg.Vector2(0.5, 0.2),
+						[
+							Label(
+								ReactiveStr(" Quit "),
+								pg.Vector2(0.2, 0.3),
+								pg.Vector2(0.55, 0.6)
+							)
+						]
+					)
+				]
+			)
+		]
+	)
+
+def create_options_frame(default, default_callback):
+	return Frame(
+		rounded=False,
+		fill=(98, 111, 71),
+		position=pg.Vector2(0, 0),
+		size=pg.Vector2(800, 600),
+		children=[
+			Label(
+				ReactiveStr("Options"),
+				pg.Vector2(0.25, 0.05),
+				pg.Vector2(0.5, 0.1)
+			),
+			Frame(
+				rounded=True,
+				fill=(164, 180, 101),
+				position=pg.Vector2(0.35, 0.3),
+				size=pg.Vector2(0.3, 0.6),
+				children=[
+					Button(
+						lambda: default.set_tab("options_color"),
+						(255, 207, 80),
+						pg.Vector2(0.25, 0.15),
+						pg.Vector2(0.5, 0.2),
+						[
+							Label(
+								ReactiveStr("Color"),
+								pg.Vector2(0.25, 0.3),
+								pg.Vector2(0.55, 0.6)
+							)
+						]
+					),
+					Button(
+						default_callback,
+						(255, 207, 80),
+						pg.Vector2(0.25, 0.4),
+						pg.Vector2(0.5, 0.2),
+						[
+							Label(
+								ReactiveStr("Difficult"),
+								pg.Vector2(0.1, 0.3),
+								pg.Vector2(0.8, 0.6)
+							)
+						]
+					),
+					Button(
+						lambda: default.set_tab("main_menu"),
+						(255, 207, 80),
+						pg.Vector2(0.25, 0.65),
+						pg.Vector2(0.5, 0.2),
+						[
+							Label(
+								ReactiveStr("Back"),
+								pg.Vector2(0.2, 0.3),
+								pg.Vector2(0.55, 0.6)
+							)
+						]
+					)
+				]
+			)
+		]
+	)
+
+def create_color_options_frame(default, options):
+	return Frame(
+		rounded=False,
+		fill=(98, 111, 71),
+		position=pg.Vector2(0, 0),
+		size=pg.Vector2(800, 600),
+		children=[
+			Label(
+				ReactiveStr("Color Options"),
+				pg.Vector2(0.25, 0.05),
+				pg.Vector2(0.5, 0.1)
+			),
+			Frame(
+				rounded=True,
+				fill=(164, 180, 101),
+				position=pg.Vector2(0.35, 0.3),
+				size=pg.Vector2(0.3, 0.6),
+				children=[
+					Label(
+						ReactiveStr("R:"),
+						pg.Vector2(0.1, 0.1),
+						pg.Vector2(0.1, 0.1)
+					),
+					InputBox(
+						lambda val: options.set_temp_color(int(val), options.temp_color[1], options.temp_color[2]),
+						pg.Vector2(0.2, 0.1),
+						pg.Vector2(0.2, 0.1)
+					),
+					Label(
+						ReactiveStr("G:"),
+						pg.Vector2(0.1, 0.25),
+						pg.Vector2(0.1, 0.1)
+					),
+					InputBox(
+						lambda val: options.set_temp_color(options.temp_color[0], int(val), options.temp_color[2]),
+						pg.Vector2(0.2, 0.25),
+						pg.Vector2(0.2, 0.1)
+					),
+					Label(
+						ReactiveStr("B:"),
+						pg.Vector2(0.1, 0.4),
+						pg.Vector2(0.1, 0.1)
+					),
+					InputBox(
+						lambda val: options.set_temp_color(options.temp_color[0], options.temp_color[1], int(val)),
+						pg.Vector2(0.2, 0.4),
+						pg.Vector2(0.2, 0.1)
+					),
+					Button(
+						options.random_color,
+						(200, 200, 200),
+						pg.Vector2(0.5, 0.1),
+						pg.Vector2(0.3, 0.1),
+						[
+							Label(
+								ReactiveStr("Random"),
+								pg.Vector2(0.1, 0.1),
+								pg.Vector2(0.8, 0.8)
+							)
+						]
+					),
+					Button(
+						options.apply_temp_color,
+						(200, 200, 200),
+						pg.Vector2(0.5, 0.25),
+						pg.Vector2(0.3, 0.1),
+						[
+							Label(
+								ReactiveStr("Apply"),
+								pg.Vector2(0.1, 0.1),
+								pg.Vector2(0.8, 0.8)
+							)
+						]
+					),
+					Button(
+						lambda: default.set_tab("options"),
+						(200, 200, 200),
+						pg.Vector2(0.5, 0.4),
+						pg.Vector2(0.3, 0.1),
+						[
+							Label(
+								ReactiveStr("Back"),
+								pg.Vector2(0.1, 0.1),
+								pg.Vector2(0.8, 0.8)
+							)
+						]
+					)
+				]
+			)
+		]
+	)
+
+def create_game_ui_frame(default, app):
+	return Frame(
+		False,
+		(98, 111, 71),
+		pg.Vector2(0, 0),
+		pg.Vector2(800, 600),
+		[
+			Button(
+				lambda: default.set_tab("game"),
+				(200, 200, 200),
+				pg.Vector2(0.01, 0.01),
+				pg.Vector2(0.1, 0.05),
+				[
+					Label(
+						ReactiveStr("Back"),
+						pg.Vector2(0.1, 0.1),
+						pg.Vector2(0.8, 0.6)
+					)
+				]
+			),
+			BoardFrame(
+				app._board,
+				[app.KNOWN_WHITE_PLAYERS['human'], app.KNOWN_BLACK_PLAYERS['human']],
+				(100, 100, 100),
+				pg.Vector2(0.2, 0.1),
+				pg.Vector2(0.6, 0.6 * 4/3)
+			)
+		]
+	)
+
+def create_game_frame(default, app, black_player_choices, white_player_choices):
+	return Frame(
+		rounded=False,
+		fill=(98, 111, 71),
+		position=pg.Vector2(0, 0),
+		size=pg.Vector2(800, 600),
+		children=[
+			Label(
+				ReactiveStr("Players"),
+				pg.Vector2(0.35, 0.05),
+				pg.Vector2(0.3, 0.05)
+			),
+			Label(
+				app.get_black_key(),
+				pg.Vector2(0.35, 0.15),
+				pg.Vector2(0.1, 0.02)
+			),
+			Label(
+				app.get_white_key(),
+				pg.Vector2(0.55, 0.15),
+				pg.Vector2(0.1, 0.02)
+			),
+			Button(
+				lambda: default.set_tab("game_ui"),
+				(255, 207, 80),
+				pg.Vector2(0.45, 0.45),
+				pg.Vector2(0.1, 0.1),
+				[
+					Label(
+						ReactiveStr("Start"),
+						pg.Vector2(0.1, 0.1),
+						pg.Vector2(0.8, 0.8)
+					)
+				]
+			),
+			Button(
+				lambda: default.set_tab("main_menu"),
+				(200, 200, 200),
+				pg.Vector2(0.01, 0.01),
+				pg.Vector2(0.2, 0.05),
+				[
+					Label(
+						ReactiveStr("Main menu"),
+						pg.Vector2(0.1, 0.1),
+						pg.Vector2(0.8, 0.8)
+					)
+				]
+			),
+			Frame(
+				rounded = True,
+				fill = (164, 180, 101),
+				position=pg.Vector2(0.1, 0.2),
+				size=pg.Vector2(0.25, 0.7),
+				children=[
+					Label(
+						ReactiveStr("Black"),
+						pg.Vector2(0.1, 0.05),
+						pg.Vector2(0.8, 0.2)
+					)
+				] + black_player_choices
+			),
+			Frame(
+				rounded = True,
+				fill = (164, 180, 101),
+				position=pg.Vector2(0.65, 0.2),
+				size=pg.Vector2(0.25, 0.7),
+				children=[
+					Label(
+						ReactiveStr("White"),
+						pg.Vector2(0.1, 0.05),
+						pg.Vector2(0.8, 0.2)
+					)
+				] + white_player_choices
+			)
+		]
+	)
+
+def create_quit_frame(default):
+	return Frame(
+		rounded=False,
+		fill=(98, 111, 71),
+		position=pg.Vector2(0, 0),
+		size=pg.Vector2(800, 600),
+		children=[
+			Label(
+				ReactiveStr("Êtes vous sur de vouloir quitter ?"),
+				pg.Vector2(0.1, 0.1),
+				pg.Vector2(0.8, 0.2)
+			),
+			Button(
+				lambda: default.set_tab("main_menu"),
+				(200, 200, 200),
+				pg.Vector2(0.2, 0.45),
+				pg.Vector2(0.1, 0.1),
+				[
+					Label(
+						ReactiveStr("Rester"),
+						pg.Vector2(0.1, 0.1),
+						pg.Vector2(0.8, 0.8)
+					)
+				]
+			),
+			Button(
+				default.request_quit,
+				(255, 0, 0),
+				pg.Vector2(0.7, 0.45),
+				pg.Vector2(0.1, 0.1),
+				[
+					Label(
+						ReactiveStr("Quitter"),
+						pg.Vector2(0.1, 0.1),
+						pg.Vector2(0.8, 0.8)
+					)
+				]
+			)
+		]
+	)
