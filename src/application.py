@@ -49,32 +49,36 @@ class Application:
 
     @property
     def _black_player(self):
-        return self.KNOWN_BLACK_PLAYERS[self._black_key]
+        return self.KNOWN_BLACK_PLAYERS[self._black_key.value]
     
     @property
     def _white_player(self):
-        return self.KNOWN_WHITE_PLAYERS[self._white_key]
+        return self.KNOWN_WHITE_PLAYERS[self._white_key.value]
         
     def run(self):
         screen = pygame.display.set_mode((800, 600))
         clock = pygame.time.Clock()
         running = True
         
-        black_playing = False
-        
         while running and not self._ui.has_quit():
-            
             if self._ui.get_tab_name() == "game_ui":
+                # If a player have no valid moves 
+                while not self._board.get_valid_moves():
+                    print(f"[DEBUG] No valid moves for {self._board.current_player}. Switching turn.")
+                    self._board._current_player = 1 - self._board._current_player
+                    if not self._board.get_valid_moves():
+                        print("[DEBUG] No valid moves for both players. Game over.")
+                        break
+                
                 # Player turn rules
-                if black_playing and self._black_player.is_done():
-                    print("[DEBUG] White's turn")
-                    black_playing = False
-                    self._white_player.play_on(self._board)
-    
-                if not black_playing and self._white_player.is_done():
-                    print("[DEBUG] Black's turn")
-                    black_playing = True
-                    self._black_player.play_on(self._board)
+                if self._board.current_player == self._board.BLACK:
+                    if self._black_player.is_done():
+                        print("[DEBUG] Black's turn")
+                        self._black_player.play_on(self._board)
+                else:
+                    if self._white_player.is_done():
+                        print("[DEBUG] White's turn")
+                        self._white_player.play_on(self._board)
 
             # Check if the game is over
             if self._board.is_game_over():
@@ -94,11 +98,8 @@ class Application:
                     self._ui.event(event)
 
             screen.fill("white")
-
             self._ui.draw(screen)
-
             pygame.display.flip()
-
             clock.tick(60)
 
         pygame.quit()
