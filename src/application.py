@@ -64,10 +64,9 @@ class Application:
             if self._ui.get_tab_name() == "game_ui":
                 # If a player have no valid moves 
                 while not self._board.get_valid_moves():
-                    print(f"[DEBUG] No valid moves for {self._board.current_player}. Switching turn.")
+                    print(f"[DEBUG] No valid moves for {'Black' if self._board.current_player == 0 else 'White'}. Switching turn.")
                     self._board._current_player = 1 - self._board._current_player
                     if not self._board.get_valid_moves():
-                        print("[DEBUG] No valid moves for both players. Game over.")
                         break
                 
                 # Player turn rules
