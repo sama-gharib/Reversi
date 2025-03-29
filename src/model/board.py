@@ -98,7 +98,29 @@ class Board:
 
         self._current_player = 1 - self._current_player
         return True
+    
+    def flipped_pieces(self, x: int, y: int) -> int:
+        """ Count the number of pieces flipped for a move """
+        if not self.is_valid_move(x, y):
+            raise ValueError(f'Move on line {x} and column {y} is illegal.')
 
+        count_flips = 0
+        for dx, dy in self.DIRECTIONS:
+            flips = []
+            nx, ny = x + dx, y + dy
+            has_opponent_between = False
+
+            while self.in_bounds(nx, ny) and self._board[nx][ny] == 1 - self._current_player:
+                flips.append((nx, ny))
+                nx += dx
+                ny += dy
+                has_opponent_between = True
+
+            if has_opponent_between and self.in_bounds(nx, ny) and self._board[nx][ny] == self._current_player:
+                count_flips += len(flips)
+        
+        return count_flips
+    
     def is_game_over(self) -> bool:
         """ Check if the game is over (no valid moves for both players) """
         if self.get_valid_moves():
