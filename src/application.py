@@ -2,6 +2,7 @@ from model.board import Board
 from model.player import Player
 from model.human import Human
 from model.stupidity import Stupidity
+from model.haste import Haste
 from view.ui import default_ui
 from utils import ReactiveStr
 
@@ -10,12 +11,14 @@ import pygame
 class Application:
     KNOWN_WHITE_PLAYERS = {
         "human": Human(),
-        "stupidity": Stupidity()
+        "stupidity": Stupidity(),
+        "haste" : Haste()
     }
     
     KNOWN_BLACK_PLAYERS = {
         "human": Human(),
-        "stupidity": Stupidity()
+        "stupidity": Stupidity(),
+        "haste" : Haste()
     }
     
     def __init__(self):
