@@ -30,6 +30,10 @@ class Application:
         self._white_key = ReactiveStr("human")
         self._black_key = ReactiveStr("human")
 
+    def restart(self):
+        self._board.clear_board()
+        print("[DEBUG] Restart the game")
+
     def get_black_key(self):
         return self._black_key
     

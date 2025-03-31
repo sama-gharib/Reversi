@@ -330,6 +330,19 @@ def create_game_ui_frame(default, app):
 					)
 				]
 			),
+			Button(
+				lambda: app.restart(),
+				(200, 200, 200),
+				pg.Vector2(0.88, 0.01),
+				pg.Vector2(0.1, 0.05),
+				[
+					Label(
+						ReactiveStr("Restart"),
+						pg.Vector2(0.13, 0.18),
+						pg.Vector2(0.8, 0.8)
+					)
+				]
+			),
 			BoardFrame(
 				app._board,
 				[app.KNOWN_WHITE_PLAYERS['human'], app.KNOWN_BLACK_PLAYERS['human']],
