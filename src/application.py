@@ -3,6 +3,7 @@ from model.player import Player
 from model.human import Human
 from model.stupidity import Stupidity
 from model.minimax import Minimax
+from model.alphabeta import AlphaBeta
 from model.haste import HasteMax, HasteMin
 from view.ui import default_ui
 from utils import ReactiveStr
@@ -15,7 +16,7 @@ class Application:
         "stupidity": Stupidity(),
         "hasteMax" : HasteMax(),
         "hasteMin" : HasteMin(),
-        "minimax" : Minimax()
+        "minimax" : AlphaBeta()
     }
     
     KNOWN_BLACK_PLAYERS = {
@@ -23,7 +24,7 @@ class Application:
         "stupidity": Stupidity(),
         "hasteMax" : HasteMax(),
         "hasteMin" : HasteMin(),
-        "minimax" : Minimax()
+        "minimax" : AlphaBeta()
     }
     
     def __init__(self):
