@@ -16,7 +16,8 @@ class Application:
         "stupidity": Stupidity(),
         "hasteMax" : HasteMax(),
         "hasteMin" : HasteMin(),
-        "minimax" : AlphaBeta(2)
+        "minimax" : Minimax(),
+        "alphabeta" : AlphaBeta(4)
     }
     
     KNOWN_BLACK_PLAYERS = {
@@ -24,7 +25,8 @@ class Application:
         "stupidity": Stupidity(),
         "hasteMax" : HasteMax(),
         "hasteMin" : HasteMin(),
-        "minimax" : AlphaBeta(2)
+        "minimax" : Minimax(),
+        "alphabeta" : AlphaBeta(4)
     }
     
     def __init__(self):

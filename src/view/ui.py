@@ -81,7 +81,7 @@ def create_player_choices(callbacks, players, player_type):
 		Button(
 			callbacks[i],
 			(255, 207, 80),
-			pg.Vector2(0.1, 0.2 + i * 0.7 / len(players)),
+			pg.Vector2(0.1, 0.2 + i * 0.78 / len(players)),
 			pg.Vector2(0.8, 0.6/len(players)), 
 			[
 				Label(
@@ -383,7 +383,7 @@ def create_game_frame(default, app, black_player_choices, white_player_choices):
 				[
 					Label(
 						ReactiveStr("Start"),
-						pg.Vector2(0.1, 0.1),
+						pg.Vector2(0.1, 0.3),
 						pg.Vector2(0.8, 0.8)
 					)
 				]
