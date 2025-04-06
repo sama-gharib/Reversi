@@ -153,28 +153,6 @@ class Board:
             row = " ".join(symbols[self._board[i][j]] for j in range(self._board_size))
             print(f"{i} {row}")
 
-    def evaluate_board(self) -> float:
-        """ Évalue le plateau de jeu en fonction des poids définis."""
-        WEIGHTS = [
-        [100, -20, 10,  5,  5, 10, -20, 100],
-        [-20, -50, -2, -2, -2, -2, -50, -20],
-        [10,  -2,  1,  1,  1,  1,  -2,  10],
-        [5,   -2,  1,  0,  0,  1,  -2,   5],
-        [5,   -2,  1,  0,  0,  1,  -2,   5],
-        [10,  -2,  1,  1,  1,  1,  -2,  10],
-        [-20, -50, -2, -2, -2, -2, -50, -20],
-        [100, -20, 10,  5,  5, 10, -20, 100]
-        ]
-
-        score = 0
-        for x in range(8):
-            for y in range(8):
-                if self._board[x][y] == self._current_player:  # L'IA
-                    score += WEIGHTS[x][y]
-                elif self._board[x][y] == 1 - self._current_player:  # Adversaire
-                    score -= WEIGHTS[x][y]
-        return score
-
     @property
     def board_size(self) -> int:
         """ Getter for the board size """
