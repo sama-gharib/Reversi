@@ -82,7 +82,11 @@ class Board:
         if not self.is_valid_move(x, y):
             raise ValueError(f'Move on line {x} and column {y} is illegal.')
 
-        self.history.append(Move ("black" if self._current_player == Board.BLACK else "white", x, y))
+        self.history.append(Move (
+            team = "black" if self._current_player == Board.BLACK else "white",
+            line = x,
+            column = y
+        ))
 
         self._board[x][y] = self._current_player
 

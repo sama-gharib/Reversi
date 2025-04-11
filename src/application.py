@@ -73,20 +73,20 @@ class Application:
     def _white_player(self):
         return self.KNOWN_WHITE_PLAYERS[self._white_key.value]
 
-
+    
     def _save_to_database(self):
         db = sql.connect('res/database/saved_games.sqlite')
         cursor = db.cursor()
 
-        number_of_players = cursor.execute('select count(*) from Player').fetchone()
+        number_of_players = cursor.execute('select count(*) from Player').fetchone()[0]
 
         # Inserting white player
         cursor.execute(
             f'''
             insert into Player (id, score, strategy, difficulty) values (
-                "NULL",
+                NULL,
                 {self._board.get_score(Board.WHITE)},
-                {self._white_player},
+                '{self._white_key}',
                 0
             )'''
         )
@@ -96,28 +96,29 @@ class Application:
         cursor.execute(
             f'''
             insert into Player (id, score, strategy, difficulty) values (
-                "NULL",
+                NULL,
                 {self._board.get_score(Board.BLACK)},
-                {self._black_player},
+                '{self._black_key}',
                 0
             )'''
         )
-
-        game_id = cursor.execute('select max(precedence) from Player').fetchone()
+        
 
         # Inserting game
 
         cursor.execute(
             f'''
             insert into Game (precedence, white, black) values (
-                "NULL",
+                NULL,
                 {number_of_players},
                 {number_of_players+1}
             )
             '''
         )
 
-        
+        db.commit()
+
+        game_id = cursor.execute('select max(precedence) from Game').fetchone()[0]
 
         # Inserting moves
 
@@ -126,7 +127,7 @@ class Application:
                 f'''
                 insert into Move (precedence, team, line, column, game) values (
                     NULL,
-                    {move.team},
+                    '{move.team}',
                     {move.line},
                     {move.column},
                     {game_id}
@@ -136,6 +137,7 @@ class Application:
 
         db.commit()
     
+
     def run(self):
         screen = pygame.display.set_mode((800, 600))
         clock = pygame.time.Clock()

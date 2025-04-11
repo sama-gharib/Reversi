@@ -8,7 +8,7 @@ from time import sleep
 class Stupidity (Player):
 
     def _think(self, board) -> Move:
-        sleep(uniform(0.5, 1)) # Simulate thinking time
+        #sleep(uniform(0.5, 1)) # Simulate thinking time
 
         c = choice(board.get_valid_moves())
         

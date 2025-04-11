@@ -7,7 +7,7 @@ class Move:
         if v < 0 or v > 7:
             raise ValueError('`Move` value should be between 0 and 7 (included).')
 
-    def __init__(self, team: str, line = 0, column = 0):
+    def __init__(self, line = 0, column = 0, team = 'unknown'):
         Move.assert_bounds(line)
         Move.assert_bounds(column)
 
