@@ -11,8 +11,7 @@ from copy import deepcopy
 class Minimax (Player):
 
     def _think(self, board) -> Move:
-        sleep(uniform(0.5, 1)) # Simulate thinking time
-        # On utilise l'algorithme Minimax pour déterminer le meilleur coup
+        #sleep(uniform(0.5, 1)) # Simulate thinking time
         c = self.best_move(board, 4)
         if c is not None:
             return Move(c[1], c[0])
@@ -22,18 +21,13 @@ class Minimax (Player):
             return Move(valid_moves[0][1], valid_moves[0][0])
     
     def best_move(self, board, depth) -> Move:
+        """ Find the best move using minimax algorithm """
         best_score = float('-inf')
         best_move = None
         valid_moves = board.get_valid_moves()   
-        print(f"[DEBUG] Valid moves: {valid_moves}")
-        corners = [(0,0), (0,7), (7,0), (7,7)]
+
         for move in valid_moves:
-            if move in corners:
-                # Si on joue un coin, on ne cherche pas plus loin
-                return move
-            
             # Une copie = on simule un coup valide
-            print(f"[DEBUG] Move1: {move}")
             board_copy = deepcopy(board)
             board_copy.make_move(move[0], move[1])
             score = self.minimax(board_copy, depth - 1, float('-inf'), float('inf'), False)
@@ -45,6 +39,7 @@ class Minimax (Player):
         return best_move
           
     def minimax(self, board, depth, alpha, beta, maximizing_player):
+        """ Minimax algorithm with alpha-beta pruning """
         new_board = deepcopy(board)
         valid_moves = new_board.get_valid_moves()
 
@@ -85,93 +80,128 @@ class Minimax (Player):
             
             return best_score
 
-        
-    def evaluate_board(self, board) -> float:
-        """ Évalue le plateau de jeu en fonction des poids définis."""
-        WEIGHTS = [
-        [150, -50, 20,  10,  10, 20, -50, 150],
-        [-50, -50, -2, -2, -2, -2, -50, -50],
-        [20,  -2,  1,  1,  1,  1,  -2,  20],
-        [10,   -2,  1,  0,  0,  1,  -2,   10],
-        [10,   -2,  1,  0,  0,  1,  -2,   10],
-        [20,  -2,  1,  1,  1,  1,  -2,  20],
-        [-50, -50, -2, -2, -2, -2, -50, -50],
-        [150, -50, 20,  10,  10, 20, -50, 150]
-        ]
+    def evaluate_board2(self, board):
+        """ Evaluate the board based on various heuristics """
+        total_pieces = self.count_total_pieces(board)
 
-        score = 0
-        for x in range(8):
-            for y in range(8):
-                if board.get_at(x, y) == board.current_player:  # L'IA
-                    score += WEIGHTS[x][y]
-                elif board.get_at(x, y) == 1 - board.current_player:  # Adversaire
-                    score -= WEIGHTS[x][y]
+        # Beginning of game
+        if total_pieces < 20:
+            weights = {
+                'piece_difference': 10,
+                'mobility': 100,
+                'corner_control': 500,
+                'stability': 30,
+                'adjacent_to_corners': -50
+            }
+        # Mid game
+        elif total_pieces < 50:
+            weights = {
+                'piece_difference': 20,
+                'mobility': 50,
+                'corner_control': 700,
+                'stability': 50,
+                'adjacent_to_corners': -30
+            }
+        # End of game
+        else:
+            weights = {
+                'piece_difference': 100,
+                'mobility': 20,
+                'corner_control': 1000,
+                'stability': 100,
+                'adjacent_to_corners': -10
+            }
+
+        # Calcul final score
+        score = (
+            weights['piece_difference'] * self.piece_difference(board) +
+            weights['mobility'] * self.mobility(board) +
+            weights['corner_control'] * self.corner_control(board) +
+            weights['stability'] * self.stability(board) +
+            weights['adjacent_to_corners'] * self.adjacent_to_corners(board)
+        )
+
         return score
     
-    def evaluate_board2(self, board) -> float:
-        """ Evaluates the board state for the current player """
-        # Evaluation weights
-        weights = {
-            'coin_parity': 1.0,
-            'mobility': 2.0,
-            'corner': 5.0,
-            'stability': 3.0,
-            'edge': 2.5
-        }
-        
-        # Coin parity (normalized)
-        player_count = sum(row.count(board.current_player) for row in board.board)
-        opponent_count = sum(row.count(1 - board.current_player) for row in board.board)
-        total = player_count + opponent_count + 1  # +1 to avoid division by zero
-        coin_parity = (player_count - opponent_count) / total
-        
-        # Mobility
-        current_moves = len(board.get_valid_moves())
-        board._current_player = 1 - board.current_player
-        opponent_moves = len(board.get_valid_moves())
-        board._current_player = 1 - board.current_player  # Switch back
-        mobility = (current_moves - opponent_moves) / (current_moves + opponent_moves + 1)
-        
-        # Corner control
-        corners = [(0,0), (0,7), (7,0), (7,7)]
-        player_corners = sum(1 for (x,y) in corners if board.get_at(x,y) == board.current_player)
-        opponent_corners = sum(1 for (x,y) in corners if board.get_at(x,y) == 1 - board.current_player)
-        corner_total = player_corners + opponent_corners + 1
-        corner_control = (player_corners - opponent_corners) / corner_total
-        
-        # Edge control
-        edges = [(i,j) for i in [0,7] for j in range(1,7)] + [(i,j) for i in range(1,7) for j in [0,7]]
-        player_edges = sum(1 for (x,y) in edges if board.get_at(x,y) == board.current_player)
-        opponent_edges = sum(1 for (x,y) in edges if board.get_at(x,y) == 1 - board.current_player)
-        edge_total = player_edges + opponent_edges + 1
-        edge_control = (player_edges - opponent_edges) / edge_total
-        
-        # Stability (simplified)
-        stability = self._calculate_stability(board)
-        
-        # Weighted sum
-        evaluation = (
-            weights['coin_parity'] * coin_parity +
-            weights['mobility'] * mobility +
-            weights['corner'] * corner_control +
-            weights['edge'] * edge_control +
-            weights['stability'] * stability
-        )
-        
-        return evaluation
+    def count_total_pieces(self, board) -> int:
+        """ Count the total number of pieces on the board """
+        player_count = sum(row.count(board._current_player) for row in board.board)
+        opponent_count = sum(row.count(1 - board._current_player) for row in board.board)
+        return player_count + opponent_count
+
     
-    def _calculate_stability(self, board) -> float:
-        """ Simplified stability calculation """
-        corners = [(0,0), (0,7), (7,0), (7,7)]
-        edges = [(i,j) for i in [0,7] for j in range(1,7)] + [(i,j) for i in range(1,7) for j in [0,7]]
+    def piece_difference(self, board) -> float:
+        """ Evaluate the difference in pieces """
+        player_count = sum(row.count(board._current_player) for row in board.board)
+        opponent_count = sum(row.count(1 - board._current_player) for row in board.board)
+        total = player_count + opponent_count
+        return 100 * (player_count - opponent_count) / total
+    
+    def mobility(self, board) -> float:
+        """ Evaluate the mobility of the players """
+        ia_moves = len(board.get_valid_moves())
+        board._current_player = 1 - board.current_player
+        adv_moves = len(board.get_valid_moves())
+        board._current_player = 1 - board.current_player
+        if ia_moves + adv_moves == 0:
+            return 0
+        return 100 * (ia_moves - adv_moves) / (ia_moves + adv_moves)
+    
+    def corner_control(self, board) -> float:
+        """ Evaluate the corner control """
+        corners = [(0, 0), (0, 7), (7, 0), (7, 7)]
+        ia = 0
+        adv = 0
+        for x, y in corners:
+            if board.get_at(x, y) == board._current_player:
+                ia += 1
+            elif board.get_at(x, y) == 1 - board._current_player:
+                adv += 1
+        return 25 * (ia - adv)
+    
+    def stability(self, board) -> float:
+        """ Evaluate the stability of pieces """
+        corners = [(0, 0), (0, 7), (7, 0), (7, 7)]
+        edges = [(i, j) for i in [0, 7] for j in range(1, 7)] + [(i, j) for i in range(1, 7) for j in [0, 7]]
         
-        stable = 0
+        stable_ia = 0
+        stable_adv = 0
+        current = board._current_player
+        opponent = 1 - current
+
         for x in range(8):
             for y in range(8):
-                if board.get_at(x,y) == board.current_player:
-                    if (x,y) in corners:
-                        stable += 2  # Corners are very stable
-                    elif (x,y) in edges:
-                        stable += 1  # Edges are somewhat stable
-        
-        return stable / 64  # Normalized
+                piece = board.get_at(x, y)
+                if piece == current:
+                    if (x, y) in corners:
+                        stable_ia += 2
+                    elif (x, y) in edges:
+                        stable_ia += 1
+                elif piece == opponent:
+                    if (x, y) in corners:
+                        stable_adv += 2
+                    elif (x, y) in edges:
+                        stable_adv += 1
+
+        total = stable_ia + stable_adv
+        if total == 0:
+            return 0
+        return 100 * (stable_ia - stable_adv) / total
+    
+    def adjacent_to_corners(self, board) -> float:
+        """ Evaluate the danger of being adjacent to corners """
+        danger_coords = {
+            (0, 0): [(0, 1), (1, 0), (1, 1)],
+            (0, 7): [(0, 6), (1, 7), (1, 6)],
+            (7, 0): [(6, 0), (7, 1), (6, 1)],
+            (7, 7): [(6, 7), (7, 6), (6, 6)],
+        }
+        score = 0
+        for corner, adjacents in danger_coords.items():
+            corner_val = board.get_at(*corner)
+            for x, y in adjacents:
+                if board.get_at(x, y) == board._current_player and corner_val == 0:
+                    score -= 12.5
+                elif board.get_at(x, y) == 1 - board._current_player and corner_val == 0:
+                    score += 12.5
+        return score 
