@@ -1,6 +1,7 @@
 from typing import List, Tuple
-from collections import OrderedDict
+# from collections import OrderedDict
 
+from model.move import Move
 
 class Board:
     """ Reversi (Othello) board class """
@@ -38,7 +39,8 @@ class Board:
         self._board[mid][mid] = self.WHITE
         self._board[mid - 1][mid] = self.BLACK
         self._board[mid][mid - 1] = self.BLACK
-
+        self.history = []
+        
     def get_at(self, line: int, column: int) -> int:
         return self._board[line][column]
 
@@ -80,6 +82,8 @@ class Board:
         if not self.is_valid_move(x, y):
             raise ValueError(f'Move on line {x} and column {y} is illegal.')
 
+        self.history.append(Move ("black" if self._current_player == Board.BLACK else "white", x, y))
+
         self._board[x][y] = self._current_player
 
         for dx, dy in self.DIRECTIONS:
@@ -119,7 +123,10 @@ class Board:
                 count_flips += len(flips)
         
         return count_flips
-    
+
+    def get_score(self, team) -> int:
+        return sum(row.count(team) for row in self.board)    
+
     def is_game_over(self) -> bool:
         """ Check if the game is over (no valid moves for both players) """
         if self.get_valid_moves():

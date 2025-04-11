@@ -8,6 +8,7 @@ from model.haste import HasteMax, HasteMin
 from view.ui import default_ui
 from utils import ReactiveStr
 
+import sqlite3 as sql
 import pygame
 
 class Application:
@@ -71,7 +72,70 @@ class Application:
     @property
     def _white_player(self):
         return self.KNOWN_WHITE_PLAYERS[self._white_key.value]
+
+
+    def _save_to_database(self):
+        db = sql.connect('res/database/saved_games.sqlite')
+        cursor = db.cursor()
+
+        number_of_players = cursor.execute('select count(*) from Player').fetchone()
+
+        # Inserting white player
+        cursor.execute(
+            f'''
+            insert into Player (id, score, strategy, difficulty) values (
+                "NULL",
+                {self._board.get_score(Board.WHITE)},
+                {self._white_player},
+                0
+            )'''
+        )
+
+        # Inserting black player
         
+        cursor.execute(
+            f'''
+            insert into Player (id, score, strategy, difficulty) values (
+                "NULL",
+                {self._board.get_score(Board.BLACK)},
+                {self._black_player},
+                0
+            )'''
+        )
+
+        game_id = cursor.execute('select max(precedence) from Player').fetchone()
+
+        # Inserting game
+
+        cursor.execute(
+            f'''
+            insert into Game (precedence, white, black) values (
+                "NULL",
+                {number_of_players},
+                {number_of_players+1}
+            )
+            '''
+        )
+
+        
+
+        # Inserting moves
+
+        for move in self._board.history:
+            cursor.execute(
+                f'''
+                insert into Move (precedence, team, line, column, game) values (
+                    NULL,
+                    {move.team},
+                    {move.line},
+                    {move.column},
+                    {game_id}
+                )
+                '''
+            )
+
+        db.commit()
+    
     def run(self):
         screen = pygame.display.set_mode((800, 600))
         clock = pygame.time.Clock()
@@ -101,16 +165,18 @@ class Application:
             if not self._game_done and self._board.is_game_over():
                 winner = self._board.get_winner()
                 if winner == self._board.BLACK:
-                    print(sum(row.count(self._board.BLACK) for row in self._board.board))
-                    print(sum(row.count(self._board.WHITE) for row in self._board.board))
                     print("[DEBUG] Game Over! Black wins!")
                 elif winner == self._board.WHITE:
-                    print(sum(row.count(self._board.BLACK) for row in self._board.board))
-                    print(sum(row.count(self._board.WHITE) for row in self._board.board))
                     print("[DEBUG] Game Over! White wins!")
                 else:
                     print("[DEBUG] Game Over! It's a tie!")
+                
+                print(self._board.get_score(Board.WHITE))
+                print(self._board.get_score(Board.BLACK))
                 self._game_done = True  # End the game
+
+                self._save_to_database()
+
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
