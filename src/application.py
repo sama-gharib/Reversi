@@ -78,7 +78,6 @@ class Application:
         db = sql.connect('res/database/saved_games.sqlite')
         cursor = db.cursor()
 
-        number_of_players = cursor.execute('select count(*) from Player').fetchone()[0]
 
         # Inserting white player
         cursor.execute(
@@ -103,15 +102,16 @@ class Application:
             )'''
         )
         
-
+        last_player = cursor.execute('select max(id) from Player').fetchone()[0]
+        
         # Inserting game
 
         cursor.execute(
             f'''
             insert into Game (precedence, white, black) values (
                 NULL,
-                {number_of_players},
-                {number_of_players+1}
+                {last_player-1},
+                {last_player}
             )
             '''
         )
