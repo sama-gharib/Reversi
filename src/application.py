@@ -37,9 +37,11 @@ class Application:
         self._board = Board()
         self._white_key = ReactiveStr("human")
         self._black_key = ReactiveStr("human")
+        self._game_done = False
 
     def restart(self):
         self._board.clear_board()
+        self._game_done = False
         print("[DEBUG] Restart the game")
 
     def get_black_key(self):
@@ -75,8 +77,9 @@ class Application:
         clock = pygame.time.Clock()
         running = True
         
+
         while running and not self._ui.has_quit():
-            if self._ui.get_tab_name() == "game_ui":
+            if not self._game_done and self._ui.get_tab_name() == "game_ui":
                 # If a player have no valid moves 
                 while not self._board.get_valid_moves():
                     print(f"[DEBUG] No valid moves for {'Black' if self._board.current_player == 0 else 'White'}. Switching turn.")
@@ -95,15 +98,19 @@ class Application:
                         self._white_player.play_on(self._board)
 
             # Check if the game is over
-            if self._board.is_game_over():
+            if not self._game_done and self._board.is_game_over():
                 winner = self._board.get_winner()
                 if winner == self._board.BLACK:
+                    print(sum(row.count(self._board.BLACK) for row in self._board.board))
+                    print(sum(row.count(self._board.WHITE) for row in self._board.board))
                     print("[DEBUG] Game Over! Black wins!")
                 elif winner == self._board.WHITE:
+                    print(sum(row.count(self._board.BLACK) for row in self._board.board))
+                    print(sum(row.count(self._board.WHITE) for row in self._board.board))
                     print("[DEBUG] Game Over! White wins!")
                 else:
                     print("[DEBUG] Game Over! It's a tie!")
-                running = False  # End the game
+                self._game_done = True  # End the game
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
