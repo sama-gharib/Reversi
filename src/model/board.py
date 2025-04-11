@@ -1,5 +1,4 @@
 from typing import List, Tuple
-from copy import deepcopy
 from collections import OrderedDict
 
 
@@ -167,11 +166,5 @@ class Board:
     def board(self) -> List[List[int]]:
         """ Getter for the board """
         return self._board
-    
-    def copy(self) -> 'Board':
-        """ Create and return a deep copy of the board """
-        new_board = Board()
-        new_board._board = deepcopy(self._board)
-        new_board._current_player = self._current_player
-        return new_board
+
     

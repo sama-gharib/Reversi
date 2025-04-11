@@ -6,6 +6,8 @@ from random import uniform
 
 from time import sleep
 
+from copy import deepcopy
+
 class Minimax (Player):
 
     def _think(self, board) -> Move:
@@ -32,7 +34,7 @@ class Minimax (Player):
             
             # Une copie = on simule un coup valide
             print(f"[DEBUG] Move1: {move}")
-            board_copy = board.copy()
+            board_copy = deepcopy(board)
             board_copy.make_move(move[0], move[1])
             score = self.minimax(board_copy, depth - 1, float('-inf'), float('inf'), False)
 
@@ -43,7 +45,7 @@ class Minimax (Player):
         return best_move
           
     def minimax(self, board, depth, alpha, beta, maximizing_player):
-        new_board = board.copy()
+        new_board = deepcopy(board)
         valid_moves = new_board.get_valid_moves()
 
         if depth == 0 or len(valid_moves) == 0:
@@ -53,7 +55,7 @@ class Minimax (Player):
             best_score = float('-inf')
 
             for move in valid_moves:
-                new_board = board.copy()
+                new_board = deepcopy(board)
                 new_board.make_move(*move)
 
                 score = self.minimax(new_board, depth - 1, alpha, beta, False)
@@ -70,7 +72,7 @@ class Minimax (Player):
             best_score = float('inf')
 
             for move in valid_moves:
-                new_board = board.copy()
+                new_board = deepcopy(board)
                 new_board.make_move(*move)
 
                 score = self.minimax(new_board, depth - 1, alpha, beta, True)

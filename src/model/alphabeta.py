@@ -2,6 +2,7 @@ from model.move import Move
 from model.player import Player
 from typing import Optional, Tuple
 import math
+from copy import deepcopy
 
 class AlphaBeta(Player):
     def __init__(self, max_depth: int = 8):
@@ -40,7 +41,7 @@ class AlphaBeta(Player):
         valid_moves = board.get_valid_moves()
         if not valid_moves:
             # Pass turn
-            new_board = board.copy()
+            new_board = deepcopy(board)
             new_board._current_player = 1 - new_board.current_player
             return self._alphabeta(new_board, depth - 1, alpha, beta, not maximizing_player)
 
@@ -49,7 +50,7 @@ class AlphaBeta(Player):
         if maximizing_player:
             max_eval = -math.inf
             for move in valid_moves:
-                new_board = board.copy()
+                new_board = deepcopy(board)
                 new_board.make_move(*move)
                 
                 eval, _ = self._alphabeta(new_board, depth - 1, alpha, beta, False)
@@ -65,7 +66,7 @@ class AlphaBeta(Player):
         else:
             min_eval = math.inf
             for move in valid_moves:
-                new_board = board.copy()
+                new_board = deepcopy(board)
                 new_board.make_move(*move)
                 
                 eval, _ = self._alphabeta(new_board, depth - 1, alpha, beta, True)
