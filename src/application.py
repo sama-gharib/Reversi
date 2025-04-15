@@ -5,7 +5,7 @@ from model.stupidity import Stupidity
 from model.minimax import Minimax
 from model.alphabeta import AlphaBeta
 from model.haste import HasteMax, HasteMin
-from view.ui import default_ui
+from view.ui import default_ui, create_history_menu_frame
 from utils import ReactiveStr
 
 import sqlite3 as sql
@@ -136,6 +136,10 @@ class Application:
             )
 
         db.commit()
+
+        # Reloading history
+
+        self._ui._tabs["history"] = create_history_menu_frame(self._ui)
     
 
     def run(self):

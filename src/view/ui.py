@@ -6,6 +6,7 @@ from view.inputbox import InputBox
 from view.board_frame import BoardFrame
 from utils import ReactiveStr
 
+import sqlite3 as sql
 import pygame as pg
 from copy import deepcopy
 
@@ -60,6 +61,7 @@ def default_ui(app):
 	default = Ui({}, "main_menu")
 	default._tabs = {
 		"main_menu": create_main_menu_frame(default),
+		"history": create_history_menu_frame(default),
 		"options": create_options_frame(default, default_callback),
 		"options_color": create_color_options_frame(default, options),
 		"game_ui": create_game_ui_frame(default, app),
@@ -116,7 +118,7 @@ def create_main_menu_frame(default):
 						lambda: default.set_tab("game"),
 						(255, 207, 80),
 						pg.Vector2(0.25, 0.15),
-						pg.Vector2(0.5, 0.2),
+						pg.Vector2(0.5, 0.15),
 						[
 							Label(
 								ReactiveStr("Play !"),
@@ -126,10 +128,23 @@ def create_main_menu_frame(default):
 						]
 					),
 					Button(
+						lambda: default.set_tab("history"),
+						(255, 207, 80),
+						pg.Vector2(0.25, 0.32),
+						pg.Vector2(0.5, 0.15),
+						[
+							Label(
+								ReactiveStr("History"),
+								pg.Vector2(0.15, 0.3),
+								pg.Vector2(0.7, 0.6)
+							)
+						]
+					),
+					Button(
 						lambda: default.set_tab("options"),
 						(255, 207, 80),
-						pg.Vector2(0.25, 0.4),
-						pg.Vector2(0.5, 0.2),
+						pg.Vector2(0.25, 0.49),
+						pg.Vector2(0.5, 0.15),
 						[
 							Label(
 								ReactiveStr("Options"),
@@ -141,8 +156,8 @@ def create_main_menu_frame(default):
 					Button(
 						lambda: default.set_tab("quit"),
 						(255, 207, 80),
-						pg.Vector2(0.25, 0.65),
-						pg.Vector2(0.5, 0.2),
+						pg.Vector2(0.25, 0.66),
+						pg.Vector2(0.5, 0.15),
 						[
 							Label(
 								ReactiveStr(" Quit "),
@@ -155,6 +170,87 @@ def create_main_menu_frame(default):
 			)
 		]
 	)
+
+def create_history_menu_frame(default):
+	# Récupération des parties depuis la BD
+	bd = sql.connect('res/database/saved_games.sqlite')
+	past_games = bd.execute('''
+		select
+			g.precedence, w.strategy, w.score, b.strategy, b.score
+		from
+			Game g, Player w, Player b
+		where
+			g.white = w.id and
+			g.black = b.id
+		order by
+			g.precedence
+	''').fetchall()
+
+	to_return = Frame(
+		rounded = False,
+		fill=(98, 111, 71),
+		position=pg.Vector2(0, 0),
+		size=pg.Vector2(800, 600),
+		children = [
+			Label(
+				ReactiveStr("History"),
+				pg.Vector2(0.3, 0.05),
+				pg.Vector2(0.4, 0.1)
+			),
+			Button(
+				lambda: default.set_tab("main_menu"),
+				(200, 200, 200),
+				pg.Vector2(0.01, 0.01),
+				pg.Vector2(0.2, 0.05),
+				[
+					Label(
+						ReactiveStr("Main menu"),
+						pg.Vector2(0.1, 0.1),
+						pg.Vector2(0.8, 0.8)
+					)
+				]
+			),
+
+		] + [
+			Frame(
+				rounded = True,
+				fill = (200, 200, 200) if game[2] > game[4] else (100, 100, 100),
+				position = pg.Vector2(0.25, 0.25 + i * 0.11),
+				size = pg.Vector2(0.5, 0.1),
+				children = [
+					Label(
+						ReactiveStr(f'Game {game[0]}'),
+						pg.Vector2(0.42, 0.1),
+						pg.Vector2(0.16, 0.1)
+					),
+					Label(
+						ReactiveStr(f'White ({game[1]})'),
+						pg.Vector2(0.05, 0.2),
+						pg.Vector2(0.35, 0.1)
+					),
+					Label(
+						ReactiveStr(f'Score : {game[2]}'),
+						pg.Vector2(0.05, 0.55),
+						pg.Vector2(0.2, 0.1)
+					),
+					Label(
+						ReactiveStr(f'Black ({game[3]})'),
+						pg.Vector2(0.6, 0.2),
+						pg.Vector2(0.35, 0.1)
+					),
+					Label(
+						ReactiveStr(f'Score : {game[4]}'),
+						pg.Vector2(0.74, 0.55),
+						pg.Vector2(0.2, 0.1)
+					),
+				]
+			)
+			for i, game in enumerate(past_games)
+		]
+
+	)
+
+	return to_return
 
 def create_options_frame(default, default_callback):
 	return Frame(
