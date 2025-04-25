@@ -81,46 +81,69 @@ class AlphaBeta(Player):
             return min_eval, best_move
     
     def _evaluate_board(self, board) -> float:
-        """ Evaluates the board state for the current player """
-        # Evaluation weights
-        weights = {
-            'coin_parity': 1.0,
-            'mobility': 2.0,
-            'corner': 5.0,
-            'stability': 3.0,
-            'edge': 2.5
-        }
+        """ Evaluates the board state for the current player based on game phase """
         
-        # Coin parity (normalized)
+        # Count total pieces
         player_count = sum(row.count(board.current_player) for row in board.board)
         opponent_count = sum(row.count(1 - board.current_player) for row in board.board)
-        total = player_count + opponent_count + 1  # +1 to avoid division by zero
+        total_pieces = player_count + opponent_count
+
+        # Determine phase and assign weights
+        if total_pieces < 20:
+            # Early game
+            weights = {
+                'coin_parity': 0.5,
+                'mobility': 3.0,
+                'corner': 5.0,
+                'stability': 1.5,
+                'edge': 2.0
+            }
+        elif total_pieces < 50:
+            # Mid game
+            weights = {
+                'coin_parity': 1.0,
+                'mobility': 2.0,
+                'corner': 5.0,
+                'stability': 2.5,
+                'edge': 2.5
+            }
+        else:
+            # End game
+            weights = {
+                'coin_parity': 3.0,
+                'mobility': 1.0,
+                'corner': 5.0,
+                'stability': 4.0,
+                'edge': 1.5
+            }
+        # Coin parity (normalized)
+        total = player_count + opponent_count + 1  # Avoid divide-by-zero
         coin_parity = (player_count - opponent_count) / total
-        
+
         # Mobility
         current_moves = len(board.get_valid_moves())
         board._current_player = 1 - board.current_player
         opponent_moves = len(board.get_valid_moves())
         board._current_player = 1 - board.current_player  # Switch back
         mobility = (current_moves - opponent_moves) / (current_moves + opponent_moves + 1)
-        
+
         # Corner control
         corners = [(0,0), (0,7), (7,0), (7,7)]
         player_corners = sum(1 for (x,y) in corners if board.get_at(x,y) == board.current_player)
         opponent_corners = sum(1 for (x,y) in corners if board.get_at(x,y) == 1 - board.current_player)
         corner_total = player_corners + opponent_corners + 1
         corner_control = (player_corners - opponent_corners) / corner_total
-        
+
         # Edge control
         edges = [(i,j) for i in [0,7] for j in range(1,7)] + [(i,j) for i in range(1,7) for j in [0,7]]
         player_edges = sum(1 for (x,y) in edges if board.get_at(x,y) == board.current_player)
         opponent_edges = sum(1 for (x,y) in edges if board.get_at(x,y) == 1 - board.current_player)
         edge_total = player_edges + opponent_edges + 1
         edge_control = (player_edges - opponent_edges) / edge_total
-        
-        # Stability (simplified)
+
+        # Stability
         stability = self._calculate_stability(board)
-        
+
         # Weighted sum
         evaluation = (
             weights['coin_parity'] * coin_parity +
@@ -129,7 +152,7 @@ class AlphaBeta(Player):
             weights['edge'] * edge_control +
             weights['stability'] * stability
         )
-        
+
         return evaluation
     
     def _calculate_stability(self, board) -> float:
