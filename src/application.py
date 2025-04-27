@@ -5,6 +5,7 @@ from model.stupidity import Stupidity
 from model.minimax import Minimax
 from model.alphabeta import AlphaBeta
 from model.haste import HasteMax, HasteMin
+from model.ia_weights import Minimax as IAWeights 
 from view.ui import default_ui, create_history_menu_frame
 from utils import ReactiveStr
 
@@ -18,7 +19,8 @@ class Application:
         "hasteMax" : HasteMax(),
         "hasteMin" : HasteMin(),
         "minimax" : Minimax(),
-        "alphabeta" : AlphaBeta(4)
+        "alphabeta" : AlphaBeta(4),
+        "ia_weights" : IAWeights()
     }
     
     KNOWN_BLACK_PLAYERS = {

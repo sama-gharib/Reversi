@@ -12,7 +12,7 @@ class Minimax (Player):
 
     def _think(self, board) -> Move:
         #sleep(uniform(0.5, 1)) # Simulate thinking time
-        c = self.best_move(board, 4)
+        c = self.best_move(board, 6)
         if c is not None:
             return Move(c[1], c[0])
         else:
@@ -24,60 +24,49 @@ class Minimax (Player):
         """ Find the best move using minimax algorithm """
         best_score = float('-inf')
         best_move = None
-        valid_moves = board.get_valid_moves()   
-
+        valid_moves = board.get_valid_moves()
+        if not valid_moves:
+            return None
         for move in valid_moves:
-            # Une copie = on simule un coup valide
             board_copy = deepcopy(board)
             board_copy.make_move(move[0], move[1])
-            score = self.minimax(board_copy, depth - 1, float('-inf'), float('inf'), False)
-
+            score = self.minimax(board_copy, depth-1, float('-inf'), float('inf'), False, indent=1)
             if score > best_score:
                 best_score = score
                 best_move = move
-
         return best_move
-          
-    def minimax(self, board, depth, alpha, beta, maximizing_player):
-        """ Minimax algorithm with alpha-beta pruning """
-        new_board = deepcopy(board)
-        valid_moves = new_board.get_valid_moves()
 
-        if depth == 0 or len(valid_moves) == 0:
-            return self.evaluate_board2(new_board)
-        
+    def minimax(self, board, depth: int, alpha: float, beta: float, maximizing_player: bool, indent=0):
+        """ Minimax algorithm with alpha-beta pruning and tree visualization """
+        valid_moves = board.get_valid_moves()
+
+        if depth == 0 or not valid_moves:
+            eval_score = self.evaluate_board2(board)
+            return eval_score
+
         if maximizing_player:
             best_score = float('-inf')
-
             for move in valid_moves:
-                new_board = deepcopy(board)
-                new_board.make_move(*move)
-
-                score = self.minimax(new_board, depth - 1, alpha, beta, False)
-
+                board_copy = deepcopy(board)
+                board_copy.make_move(*move)
+                score = self.minimax(board_copy, depth - 1, alpha, beta, False, indent+1)
                 if score > best_score:
                     best_score = score
                 alpha = max(alpha, best_score)
                 if beta <= alpha:
                     break
-            
             return best_score
-        
         else:
             best_score = float('inf')
-
             for move in valid_moves:
-                new_board = deepcopy(board)
-                new_board.make_move(*move)
-
-                score = self.minimax(new_board, depth - 1, alpha, beta, True)
-
+                board_copy = deepcopy(board)
+                board_copy.make_move(*move)
+                score = self.minimax(board_copy, depth - 1, alpha, beta, True, indent+1)
                 if score < best_score:
                     best_score = score
                 beta = min(beta, best_score)
                 if beta <= alpha:
                     break
-            
             return best_score
 
     def evaluate_board2(self, board):
@@ -135,14 +124,18 @@ class Minimax (Player):
         player_count = sum(row.count(board._current_player) for row in board.board)
         opponent_count = sum(row.count(1 - board._current_player) for row in board.board)
         total = player_count + opponent_count
+        if total == 0:
+            return 0
         return 100 * (player_count - opponent_count) / total
     
     def mobility(self, board) -> float:
         """ Evaluate the mobility of the players """
         ia_moves = len(board.get_valid_moves())
-        board._current_player = 1 - board.current_player
+        # Save current player to avoid side effects
+        orig_player = board._current_player
+        board._current_player = 1 - orig_player
         adv_moves = len(board.get_valid_moves())
-        board._current_player = 1 - board.current_player
+        board._current_player = orig_player
         if ia_moves + adv_moves == 0:
             return 0
         return 100 * (ia_moves - adv_moves) / (ia_moves + adv_moves)
@@ -204,4 +197,4 @@ class Minimax (Player):
                     score -= 12.5
                 elif board.get_at(x, y) == 1 - board._current_player and corner_val == 0:
                     score += 12.5
-        return score 
+        return score/ 1.5
