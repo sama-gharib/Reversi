@@ -33,11 +33,13 @@ class Minimax(Player):
         valid_moves = board.get_valid_moves()
         if not valid_moves:
             return None
-        
+
+        # print(f"\n[INFO] All move and score (depth={depth}):")
         for move in valid_moves:
             board_copy = deepcopy(board)
             board_copy.make_move(move[0], move[1])
             score = self.minimax(board_copy, depth - 1, float('-inf'), float('inf'), False)
+            # print(f"  position: (x={move[1]}, y={move[0]})  score={score:.2f}")
             if score > best_score:
                 best_score = score
                 best_moves = [move]
@@ -61,6 +63,7 @@ class Minimax(Player):
                 value = max(value, self.minimax(board_copy, depth - 1, alpha, beta, False))
                 alpha = max(alpha, value)
                 if beta <= alpha:
+                    # print(f"Prune at depth={depth}, alpha={alpha}, beta={beta}")
                     break  # Alpha-beta pruning
             return value
         else:
@@ -71,6 +74,7 @@ class Minimax(Player):
                 value = min(value, self.minimax(board_copy, depth - 1, alpha, beta, True))
                 beta = min(beta, value)
                 if beta <= alpha:
+                    # print(f"Prune at depth={depth}, alpha={alpha}, beta={beta}")
                     break  # Alpha-beta pruning
             return value
 
@@ -102,6 +106,13 @@ class Minimax(Player):
                 'stability': 200,
                 'adjacent_to_corners': -5
             }
+
+        # pd = self.piece_difference(board)
+        # mo = self.mobility(board)
+        # cc = self.corner_control(board)
+        # st = self.stability(board)
+        # ac = self.adjacent_to_corners(board)
+        # print(f"[DEBUG] piece_difference={pd}, mobility={mo}, corner_control={cc}, stability={st}, adjacent_to_corners={ac}")
 
         score = (
             weights['piece_difference'] * self.piece_difference(board) +
