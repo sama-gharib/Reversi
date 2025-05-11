@@ -1,14 +1,11 @@
 from model.move import Move
 from model.player import Player
 
-from random import uniform, choice
-
-from time import sleep
+from random import choice
 
 class Stupidity (Player):
 
     def _think(self, board) -> Move:
-        #sleep(uniform(0.5, 1)) # Simulate thinking time
 
         c = choice(board.get_valid_moves())
         
