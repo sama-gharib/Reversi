@@ -14,28 +14,32 @@
 \begin{frame}[t,fragile]{Méthode d'évaluation}
     \textbf{Première idée:}
     Une matrice de pondération
-    \begin{lstlisting}[basicstyle=\scriptsize, escapeinside={(*}{*)}]
-def evaluate_board(self, board) -> float:
-    WEIGHTS = [
-        [150, -50, 20, 10, 10, 20, -50, 150],
-        [-50, -50, -2, -2, -2, -2, -50, -50],
-        [20, -2, 1, 1, 1, 1, -2, 20],
-        [10, -2, 1, 0, 0, 1, -2, 10],
-        [10, -2, 1, 0, 0, 1, -2, 10],
-        [20, -2, 1, 1, 1, 1, -2, 20],
-        [-50, -50, -2, -2, -2, -2, -50, -50],
-        [150, -50, 20, 10, 10, 20, -50, 150]
-    ]
-    
-    score = 0
-    for i in range(8):
-        for j in range(8):
-            if board.get_at(i, j) == board._current_player:
-                score += WEIGHTS[i][j]
-            elif board.get_at(i, j) == 1 - board._current_player:
-                score -= WEIGHTS[i][j]
-    return score
-    \end{lstlisting}
+    \begin{table}[h!]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|c|c|}
+    \hline
+    150 & -50 & 20 & 10 & 10 & 20 & -50 & 150 \\ \hline
+    -50 & -50 & -2 & -2 & -2 & -2 & -50 & -50 \\ \hline
+    20 & -2 & 1 & 1 & 1 & 1 & -2 & 20 \\ \hline
+    10 & -2 & 1 & 0 & 0 & 1 & -2 & 10 \\ \hline
+    10 & -2 & 1 & 0 & 0 & 1 & -2 & 10 \\ \hline
+    20 & -2 & 1 & 1 & 1 & 1 & -2 & 20 \\ \hline
+    -50 & -50 & -2 & -2 & -2 & -2 & -50 & -50 \\ \hline
+    150 & -50 & 20 & 10 & 10 & 20 & -50 & 150 \\ \hline
+    \end{tabular}
+    \end{table}
+    {\footnotesize
+    \begin{verbatim}
+    score ← 0
+    pour i de 0 à 7 :
+        pour j de 0 à 7 :
+            si la case (i, j) appartient au joueur courant :
+                score ← score + WEIGHTS[i][j]
+            sinon si la case (i, j) appartient à l'adversaire :
+                score ← score - WEIGHTS[i][j]
+    retourner score
+    \end{verbatim}
+    }
 \end{frame}
 
 \begin{frame}[t]{Méthode d'évaluation}
@@ -163,36 +167,36 @@ def evaluate_board(self, board) -> float:
     * Les valeurs montrent l'évolution stratégique selon la phase de jeu
 \end{frame}
 
-\begin{frame}[t,fragile]{MinMax et l'élagage Alpha-Beta}
-    \hspace{0.15\textwidth}
-    \begin{lstlisting}[basicstyle=\tiny, mathescape=false]
-def minimax(self, board, depth: int, alpha: float, beta: float, maximizing_player: bool):
-    valid_moves = board.get_valid_moves()
-    if depth == 0 or not valid_moves:
-        return self.evaluate_board2(board)
+% \begin{frame}[t,fragile]{MinMax et l'élagage Alpha-Beta}
+%     \hspace{0.15\textwidth}
+%     \begin{lstlisting}[basicstyle=\tiny, mathescape=false]
+% def minimax(self, board, depth: int, alpha: float, beta: float, maximizing_player: bool):
+%     valid_moves = board.get_valid_moves()
+%     if depth == 0 or not valid_moves:
+%         return self.evaluate_board2(board)
 
-    if maximizing_player:
-        value = float('-inf')
-        for move in valid_moves:
-            board_copy = deepcopy(board)
-            board_copy.make_move(*move)
-            value = max(value, self.minimax(board_copy, depth - 1, alpha, beta, False))
-            alpha = max(alpha, value)
-            if beta <= alpha:
-                break  
-        return value
-    else:
-        value = float('inf')
-        for move in valid_moves:
-            board_copy = deepcopy(board)
-            board_copy.make_move(*move)
-            value = min(value, self.minimax(board_copy, depth - 1, alpha, beta, True))
-            beta = min(beta, value)
-            if beta <= alpha:
-                break 
-        return value
-    \end{lstlisting}
-\end{frame}
+%     if maximizing_player:
+%         value = float('-inf')
+%         for move in valid_moves:
+%             board_copy = deepcopy(board)
+%             board_copy.make_move(*move)
+%             value = max(value, self.minimax(board_copy, depth - 1, alpha, beta, False))
+%             alpha = max(alpha, value)
+%             if beta <= alpha:
+%                 break  
+%         return value
+%     else:
+%         value = float('inf')
+%         for move in valid_moves:
+%             board_copy = deepcopy(board)
+%             board_copy.make_move(*move)
+%             value = min(value, self.minimax(board_copy, depth - 1, alpha, beta, True))
+%             beta = min(beta, value)
+%             if beta <= alpha:
+%                 break 
+%         return value
+%     \end{lstlisting}
+% \end{frame}
 
 \begin{frame}
     \frametitle{MinMax et l'élagage Alpha-Beta}
