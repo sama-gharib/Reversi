@@ -51,11 +51,11 @@
 	\begin{itemize}
 		\item Orienté Objet
 		\item Une seule méthode à surcharger
-		\item Pas à se soucier des threads
+		\item Pas à se soucier des threads ou des règles
 	\end{itemize}
 
 	\begin{figure}[b]
-		\includegraphics[width=0.7\textwidth]{img/stupidity.png}
+		\includegraphics[width=0.5\textwidth]{img/stupidity.png}
 		\caption{Code intégral de l'IA "stupidity"}
 	\end{figure}
 \end{frame}
@@ -65,7 +65,7 @@
 	\framesubtitle{Base de données}
 
 	\begin{figure}
-		\includegraphics[width=0.4\textwidth]{img/entity_relationship.png}
+		\includegraphics[width=0.2\textwidth]{img/entity_relationship.png}
 		\caption{Modèle entité-relation de notre base de données}
 	\end{figure}
 \end{frame}
@@ -74,7 +74,7 @@
 	\frametitle{Développement}
 	\framesubtitle{Base de données}
 	\begin{figure}
-		\includegraphics[width=0.7\textwidth]{img/history.png}
+		\includegraphics[width=0.5\textwidth]{img/history.png}
 		\caption{Affichage dans l'application}
 	\end{figure}
 \end{frame}
@@ -93,8 +93,62 @@
 \begin{frame}
 	\frametitle{Développement}
 	\framesubtitle{Interface utilisateur}
+	\centering
+
+	\begin{math}
+	\begin{pmatrix}
+		scale_x & 0       & position_x \\
+		0       & scale_y & position_y \\
+		0       & 0       & 1
+	\end{pmatrix}
+	\end{math}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Développement}
+	\framesubtitle{Interface utilisateur}
+	\centering
+
+	\textbf{Exemple avec un widget $B$ enfant d'un widget $A$:}
+	\vfill
+
+	\begin{math}
+	\begin{pmatrix}
+		scale_Ax & 0       & position_Ax \\
+		0       & scale_Ay & position_Ay \\
+		0       & 0       & 1
+	\end{pmatrix}
+	\times
+	\begin{pmatrix}
+		scale_Bx & 0       & position_Bx \\
+		0       & scale_By & position_By \\
+		0       & 0       & 1
+	\end{pmatrix}
+	\end{math}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Développement}
+	\framesubtitle{Interface utilisateur}
+	\centering
+	\textbf{Exemple avec un widget $B$ enfant d'un widget $A$:}
+	\vfill
+
+	\begin{math}
+	=
+	\begin{pmatrix}
+		scale_Ax \cdot scale_Bx & 0 & scale_Ax \cdot position_Bx + position_Ax \\
+		0       & scale_Ay \cdot scale_By & scale_Ay \cdot position_By + position_Ay \\
+		0       & 0       & 1
+	\end{pmatrix}
+	\end{math}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Développement}
+	\framesubtitle{Interface utilisateur}
 	\begin{figure}
-		\includegraphics[width=0.5\textwidth]{img/code_ui.png}
+		\includegraphics[width=0.3\textwidth]{img/code_ui.png}
 		\caption{Code d'une UI}
 	\end{figure}
 \end{frame}
@@ -102,7 +156,7 @@
 	\frametitle{Développement}
 	\framesubtitle{Interface utilisateur}
 	\begin{figure}
-		\includegraphics[width=0.5\textwidth]{img/ui.png}
+		\includegraphics[width=0.3\textwidth]{img/ui.png}
 		\caption{Résultat d'une UI}
 	\end{figure}
 
